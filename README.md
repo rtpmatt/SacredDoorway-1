@@ -27,14 +27,14 @@ Shows the directional flow of data and segments.
 In the Arduino_Neopixel vernacular you could address the entire first sheet (top to bottom) by doing something like:
 
 ```cpp
-// Top down
+// Top down -- Sheet 1
 for (int i = 0; i < 30; i++) {
 	strip.setPixelColor(i, 255, 255, 255); // All white - left
 	strip.setPixelColor(419 - i, 255, 255, 255); // All White - right
 }
 
-// Bottom up
-for (int i = 20; i >= 0; i--) {
+// Bottom up -- Sheet 1
+for (int i = 29; i >= 0; i--) {
 	strip.setPixelColor(i, 255, 255, 255); // All white - left
 	strip.setPixelColor(419 - i, 255, 255, 255); // All White - right
 }
@@ -46,5 +46,22 @@ int sheet3stop  = 89;
 for (sheet3start; i < sheet3stop; i++) {
 	strip.setPixelColor(i, 255, 255, 255); // All white - left
 	strip.setPixelColor(419 - i, 255, 255, 255); // All White - right
+}
+
+// Also the strip.show() function must be called for the Pixels to actually turn on.
+// This can be accomplished like follows
+for (int i = 0; i < 30; i++) {
+	strip.setPixelColor(i, 255, 255, 255); // All white - left
+	strip.setPixelColor(419 - i, 255, 255, 255); // All White - right
+}
+strip.show();
+
+// or ---- for a gradual turn on of each LED top to bottom, delay() exists in Arduino.h 
+for (int i = 0; i < 30; i++) {
+	strip.setPixelColor(i, 255, 255, 255); // All white - left
+	strip.setPixelColor(419 - i, 255, 255, 255); // All White - right
+
+	delay(500); // ms 
+	strip.show();
 }
 ```
