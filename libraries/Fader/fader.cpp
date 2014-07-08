@@ -1,5 +1,10 @@
 #include <Arduino.h>
 
+/*
+ * Pulled from the Arduino Cookbook
+ * #TODO Implement single or range of LED fades
+ */
+
 class rgb_color {
   private:
     int my_r;
