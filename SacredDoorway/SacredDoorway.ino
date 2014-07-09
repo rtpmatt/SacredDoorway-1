@@ -17,9 +17,9 @@ void setup() {
 
 void loop() {
 	// Using the Sheet class...
-	//sheet.fadeSheetTo(1, 0, 0, 0, 255, 171, 0); // sheet 1 black to orange
-	//sheet.fadeSheetTo(1, 255, 171, 0, 255, 255, 255); // sheet 1 orange to white
-	//sheet.fadeSheetTo(5, 0, 0, 0, 0, 255, 0); // Sheet 1 still orange, sheet 5 black to green
+	sheet.fadeSheetTo(1, 0, 0, 0, 255, 171, 0, 250); // sheet 1 black to orange
+	sheet.fadeSheetTo(1, 255, 171, 0, 255, 255, 255); // sheet 1 orange to white
+	sheet.fadeSheetTo(5, 0, 0, 0, 0, 255, 0); // Sheet 1 still orange, sheet 5 black to green
 }
 
 /*

@@ -49,10 +49,10 @@ void Sheet::sheetSetColor(uint8_t sh, uint32_t rgb, bool show = false) {
 	update(show);
 }
 
-void Sheet::fadeSheetTo (uint8_t sh, 
+void Sheet::fadeSheetTo (uint16_t sh, 
 				  uint16_t sr, uint16_t sg, uint16_t sb,
 				  uint16_t er, uint16_t eg, uint16_t eb,
-				  uint8_t steps = 256) {
+				  uint8_t steps) {
 	uint16_t r_diff = er - sr;
 	uint16_t g_diff = eg - sg;
 	uint16_t b_diff = eb - sb;
