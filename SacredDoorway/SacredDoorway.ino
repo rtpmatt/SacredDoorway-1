@@ -1,97 +1,28 @@
 #include <Adafruit_NeoPixel.h>
-#include <sheet.h>
-
-/*
- * The 'strip' is composed of 419 (it should have been 420, but it's the last led so who cares)
- * LEDs with daisy chained segments. Which can make addressing a specific sheet a little intense.
- *
- * Basically the first 30 LEDs are the front left side of the first sheet and the last 29 are the front right side.
- * Meaning that to address the first led of the front right side you would need to address its offset 
- * from the last LED of the front left side (which should be 419, i.e, 419 would be the first LED for the front
- * sheet on the right side.)
- 
- * Diagram to show the directional flow of data. 
- *
- *        Left                      Right
- *       -->     -->     -->        -->     -->     -->
- *  0  59  60  119 120 179 210    240 270 300 330 360 390 419
- *  |   |   |   |   |   |   |      |   |   |   |   |   |   |
- *  |   |   |   |   |   |   |      |   |   |   |   |   |   |
- *  v   ^   v   ^   v   ^   v      ^   v   ^   v   ^   v   ^
- *  |   |   |   |   |   |   |      |   |   |   |   |   |   |
- *  |   |   |   |   |   |   |      |   |   |   |   |   |   |
- * 29  30  89  90  149 150 181    211 241 271 301 331 361 391
- *   -->     -->     -->     -->>--     -->     -->     -->
- *
- * Make sense? Good. I'll get some constructors defined for each sheet
- * so you'll just be able to say sheet1.set(4) or sheet5.set(10) to handle the offsets.
- *
- * The remainder of the code was ganked out of the strandtest library and just 
- * does a cascading rainbow over the entire strip.
- *
- * These LEDs are full color (so yeah, you can do pink).
- */
+#include "sheet.h"
 
 #define PIN 6
 
 // Parameter 1 = number of pixels in strip
-// Parameter 2 = Arduino pin number (most are valid)
-// Parameter 3 = pixel type flags, add together as needed:
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(419, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel s = Adafruit_NeoPixel(419, PIN, NEO_GRB + NEO_KHZ800);
+Sheet sheet(s);
+
 uint8_t brightness = 1;
 
-int sheets[] = {
-		0,
-		30,
-		60,
-		90,
-		120,
-		150,
-		180,
-		210					
-};
-
 void setup() {
-	strip.begin();
-	strip.setBrightness(brightness); // Not really necessary, seems that the default of the library is max brightness
-	strip.show(); // Initialize all pixels to 'off'
+	s.begin();
+	s.setBrightness(brightness); // Not really necessary, seems that the default of the library is max brightness
+	s.show(); // Initialize all pixels to 'off'
 }
 
 void loop() {
-	fadeIn();
-	
-	//nSheetSetColor(5, 255, 0, 0);
-	
-	fadeSheetTo(3, 0, 0, 0, 0, 0, 255);
-	fadeSheetTo(6, 0, 0, 0, 0, 0, 255);
-	fadeSheetTo(6, 0, 0, 255, 0, 127, 255);
-	fadeSheetTo(6, 0, 127, 255, 0, 255, 255);
-	fadeSheetTo(5, 0, 0, 0, 255, 0, 0);
-	AllColorSpiral(strip.Color(255, 0, 50));
-	fadeSheetTo(5, 255, 0, 50, 255, 171, 0);
-	fadeSheetTo(2, 255, 0, 50, 0, 0, 255);
-	fadeSheetTo(1, 255, 0, 50, 50, 255, 0);
-	//rainbow(1);
-	
-	//AllBlackSpiral();
-	
-	AllWhite();
-	
-	AllBlackSpiral(20);
-	
-	//fadeOut();
-	
-	for (int i = 0; i < 5; i++) {
-		AllSheetRainbowPulse(10);
-	}
-	AllBlackSpiral(1);
-	//AllWhite();
-	//fadeOut();
-	
-	
-	
+	// Using the Sheet class...
+	//sheet.fadeSheetTo(1, 0, 0, 0, 255, 171, 0); // sheet 1 black to orange
+	//sheet.fadeSheetTo(1, 255, 171, 0, 255, 255, 255); // sheet 1 orange to white
+	//sheet.fadeSheetTo(5, 0, 0, 0, 0, 255, 0); // Sheet 1 still orange, sheet 5 black to green
 }
 
+/*
 void AllSheetRainbowPulse (uint8_t wait) {
 	uint8_t i, j;
 	
@@ -188,41 +119,6 @@ void AllColorSpiral (uint32_t color) {
 	}
 }
 
-void SheetColorSpiral (uint32_t color) {
-	/*
-	for (uint8_t i = sheets[n - 1]; i < sheets[n]; i++) {
-		strip.setPixelColor(i, color);
-		strip.setPixelColor(419 - i, color);
-	}
-	*/
-	
-	for (int i = 0; i < 30; i++) {
-		strip.setPixelColor(i, color);
-		strip.setPixelColor(391 + i, color);
-		
-		strip.setPixelColor(210 - i, color);
-		strip.setPixelColor(211 + i, color);
-		
-		strip.setPixelColor(59 - i, color);
-		strip.setPixelColor(361 + i, color);
-		
-		strip.setPixelColor(89 - i, color);
-		strip.setPixelColor(331 + i, color);
-		
-		strip.setPixelColor(119 - i, color);
-		strip.setPixelColor(301 + i, color);
-		
-		strip.setPixelColor(149 - i, color);
-		strip.setPixelColor(271 + i, color);
-		
-		strip.setPixelColor(179 - i, color);
-		strip.setPixelColor(241 + i, color);
-		
-		strip.show();
-		delay(10);
-	}
-}
-
 void AllBlackSpiral (uint8_t wait) {
 	uint16_t i;
 	for (i = 0; i < 30; i++) {
@@ -274,9 +170,6 @@ void fadeOut () {
 	brightness = 1;
 }
 
-/**
- * Rainbow fade on each sheet
- */
 void rainbow(uint8_t wait) {
 	uint16_t i, j;
 
@@ -292,10 +185,6 @@ void rainbow(uint8_t wait) {
 	}
 }
 
-/**
- * Function to light the first sheet and proceed through each 'chakra'
- * illuminating each one by its color as specific intervals
- */
 void chakraColors() {
 	uint32_t chakras[] = {
 		strip.Color(255, 255, 255), // white
@@ -339,24 +228,4 @@ uint32_t Wheel(byte WheelPos) {
 	 return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
 	}
 }
-
-void fadeSheetTo (int sheet, int sr, int sg, int sb,
-						 int er, int	 eg, int eb) {
-	int r_diff = er - sr;
-	int g_diff = eg - sg;
-	int b_diff = eb - sb;
-	int steps = 256;
-	
-	for (int i = 0; i < steps; i++) {
-		/*
-		nSheetSetColor(
-			sheet, 
-			sr + i * r_diff / steps,
-			sg + i * g_diff / steps,
-			sb + i * b_diff / steps
-		);
-		*/
-		
-		strip.show();
-	}
-}
+*/
