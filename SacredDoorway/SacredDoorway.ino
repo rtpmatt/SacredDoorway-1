@@ -1,4 +1,5 @@
 #include <Adafruit_NeoPixel.h>
+#include <Timer.h>
 
 /*
  * The 'strip' is composed of 419 (it should have been 420, but it's the last led so who cares)
@@ -37,15 +38,247 @@
 // Parameter 2 = Arduino pin number (most are valid)
 // Parameter 3 = pixel type flags, add together as needed:
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(419, PIN, NEO_GRB + NEO_KHZ800);
+uint8_t brightness = 1;
+
+int sheets[] = {
+    0,
+    30,
+    60,
+    90,
+    120,
+    150,
+    180,
+    210					
+};
 
 void setup() {
   strip.begin();
-  strip.setBrightness(255); // Not really necessary, seems that the default of the library is max brightness
+  strip.setBrightness(brightness); // Not really necessary, seems that the default of the library is max brightness
   strip.show(); // Initialize all pixels to 'off'
 }
 
 void loop() {
-  rainbow2(1);
+  fadeIn();
+  
+  //nSheetSetColor(5, 255, 0, 0);
+  
+  fadeSheetTo(3, 0, 0, 0, 0, 0, 255);
+  fadeSheetTo(6, 0, 0, 0, 0, 0, 255);
+  fadeSheetTo(6, 0, 0, 255, 0, 127, 255);
+  fadeSheetTo(6, 0, 127, 255, 0, 255, 255);
+  fadeSheetTo(5, 0, 0, 0, 255, 0, 0);
+  AllColorSpiral(strip.Color(255, 0, 50));
+  fadeSheetTo(5, 255, 0, 50, 255, 171, 0);
+  fadeSheetTo(2, 255, 0, 50, 0, 0, 255);
+  fadeSheetTo(1, 255, 0, 50, 50, 255, 0);
+  //rainbow(1);
+  
+  //AllBlackSpiral();
+  
+  AllWhite();
+  
+  AllBlackSpiral(20);
+  
+  //fadeOut();
+  
+  for (int i = 0; i < 5; i++) {
+    AllSheetRainbowPulse(10);
+  }
+  AllBlackSpiral(1);
+  //AllWhite();
+  //fadeOut();
+  
+  
+  
+}
+
+void nSheetSetColor(int n, uint16_t r, uint16_t g, uint16_t b) {
+  for (int i = sheets[n - 1]; i < sheets[n]; i++) {
+    strip.setPixelColor(i, r, g, b);
+    strip.setPixelColor(419 - i, r, g, b);
+  }
+}
+
+void AllSheetRainbowPulse (uint8_t wait) {
+  uint8_t i, j;
+  
+  for(j = 0 ; j < 255; j++) {
+    for(i = 0; i < 30; i++) {
+      strip.setPixelColor(i, Wheel(j));
+      strip.setPixelColor(419 - i, Wheel(j));
+    }
+    
+    for(i = 30; i < 60; i++) {
+      strip.setPixelColor(i, Wheel((j+10)));
+      strip.setPixelColor(419 - i, Wheel((j+10)));
+    }
+    
+    for(i = 60; i < 90; i++) {
+      strip.setPixelColor(i, Wheel((j+20)));
+      strip.setPixelColor(419 - i, Wheel((j+20)));
+    }
+    
+    for(i = 90; i < 120; i++) {
+      strip.setPixelColor(i, Wheel((j+30)));
+      strip.setPixelColor(419 - i, Wheel((j+30)));
+    }
+    
+    for(i = 120; i < 150; i++) {
+      strip.setPixelColor(i, Wheel((j+40)));
+      strip.setPixelColor(419 - i, Wheel((j+40)));
+    }
+    
+    for(i = 150; i < 180; i++) {
+      strip.setPixelColor(i, Wheel((j+50)));
+      strip.setPixelColor(419 - i, Wheel((j+50)));
+    }
+    
+    for(i = 180; i < 210; i++) {
+      strip.setPixelColor(i, Wheel((j+60)));
+      strip.setPixelColor(419 - i, Wheel((j+60)));
+    }
+    
+    fadeIn();
+    strip.show();
+    
+    delay(wait);
+  }
+}
+
+void AllWhite() {
+  uint16_t pixel;
+  for (pixel = 0; pixel < 210; pixel++) {
+    strip.setPixelColor(pixel, 255, 255, 255);
+    strip.setPixelColor(419 - pixel, 255, 255, 255);
+    
+    strip.show();
+    delay(1);
+  }
+}
+
+void AllBlack() {
+  uint16_t pixel, brightness;
+  for (pixel = 0; pixel < 210; pixel++) {
+    strip.setPixelColor(pixel, 0, 0, 0);
+    strip.setPixelColor(419 - pixel, 0, 0, 0);
+    
+    strip.show();
+  }
+}
+
+void AllColorSpiral (uint32_t color) {
+  uint16_t i;
+  for (i = 0; i < 30; i++) {
+    strip.setPixelColor(i, color);
+    strip.setPixelColor(391 + i, color);
+    
+    strip.setPixelColor(210 - i, color);
+    strip.setPixelColor(211 + i, color);
+    
+    strip.setPixelColor(59 - i, color);
+    strip.setPixelColor(361 + i, color);
+    
+    strip.setPixelColor(89 - i, color);
+    strip.setPixelColor(331 + i, color);
+    
+    strip.setPixelColor(119 - i, color);
+    strip.setPixelColor(301 + i, color);
+    
+    strip.setPixelColor(149 - i, color);
+    strip.setPixelColor(271 + i, color);
+    
+    strip.setPixelColor(179 - i, color);
+    strip.setPixelColor(241 + i, color);
+    
+    strip.show();
+    delay(10);
+  }
+}
+
+void SheetColorSpiral (uint32_t color) {
+  /*
+  for (uint8_t i = sheets[n - 1]; i < sheets[n]; i++) {
+    strip.setPixelColor(i, color);
+    strip.setPixelColor(419 - i, color);
+  }
+  */
+  
+  for (int i = 0; i < 30; i++) {
+    strip.setPixelColor(i, color);
+    strip.setPixelColor(391 + i, color);
+    
+    strip.setPixelColor(210 - i, color);
+    strip.setPixelColor(211 + i, color);
+    
+    strip.setPixelColor(59 - i, color);
+    strip.setPixelColor(361 + i, color);
+    
+    strip.setPixelColor(89 - i, color);
+    strip.setPixelColor(331 + i, color);
+    
+    strip.setPixelColor(119 - i, color);
+    strip.setPixelColor(301 + i, color);
+    
+    strip.setPixelColor(149 - i, color);
+    strip.setPixelColor(271 + i, color);
+    
+    strip.setPixelColor(179 - i, color);
+    strip.setPixelColor(241 + i, color);
+    
+    strip.show();
+    delay(10);
+  }
+}
+
+void AllBlackSpiral (uint8_t wait) {
+  uint16_t i;
+  for (i = 0; i < 30; i++) {
+    strip.setPixelColor(i, 0);
+    strip.setPixelColor(391 + i, 0);
+    
+    strip.setPixelColor(210 - i, 0);
+    strip.setPixelColor(211 + i, 0);
+    
+    strip.setPixelColor(59 - i, 0);
+    strip.setPixelColor(361 + i, 0);
+    
+    strip.setPixelColor(89 - i, 0);
+    strip.setPixelColor(331 + i, 0);
+    
+    strip.setPixelColor(119 - i, 0);
+    strip.setPixelColor(301 + i, 0);
+    
+    strip.setPixelColor(149 - i, 0);
+    strip.setPixelColor(271 + i, 0);
+    
+    strip.setPixelColor(179 - i, 0);
+    strip.setPixelColor(241 + i, 0);
+    
+    strip.show();
+    delay(wait);
+  }
+}
+
+void fadeIn () {
+  if (brightness == 1) {
+    for (int i = 1; i < 256; i++) {
+      strip.setBrightness(i);
+      strip.show();
+    }
+  }
+  
+  brightness = 255;
+}
+
+void fadeOut () {
+  if (brightness == 255) {
+    for (int i = 255; i > 0; i--) {
+      strip.setBrightness(i);
+      strip.show();
+    }
+  }
+  
+  brightness = 1;
 }
 
 /**
@@ -58,47 +291,12 @@ void rainbow(uint8_t wait) {
     for(i=0; i<strip.numPixels(); i++) {
       strip.setPixelColor(i, Wheel((i+j) & 255));
     }
-    strip.show();
+    
+    //fadeIn();
+
+    //strip.show();
     delay(wait);
   }
-}
-
-void rainbow1(uint8_t wait) {
-  uint16_t i, j;
-
-  for(j=0; j<256; j++) {
-    for(i=0; i < 29; i++) {
-      strip.setPixelColor(i, Wheel((i+j) & 255));
-      strip.setPixelColor(419 - i, Wheel((i+j) & 255));
-    }
-    strip.show();
-    delay(wait);
-  }
-}
-
-void rainbow2(uint8_t wait) {
-  uint16_t i, j;
-
-  for(j=0; j<256; j++) {
-    for(i=150; i < 179; i++) {
-      strip.setPixelColor(i, Wheel((i+j) & 255));
-      strip.setPixelColor(419 - i, Wheel((i+j) & 255));
-    }
-    strip.show();
-    //delay(wait);
-  }
-  
-  brighttron();
-}
-
-void brighttron(){  
-  for (int i = 60; i <= 89; i++)
-  {
-    strip.setPixelColor(i, 255, 255, 255);
-    strip.setPixelColor(419 - i, 255, 255, 255);
-  }
-  
-  strip.show();
 }
 
 /**
@@ -149,3 +347,21 @@ uint32_t Wheel(byte WheelPos) {
   }
 }
 
+void fadeSheetTo (int sheet, int sr, int sg, int sb,
+             int er, int eg, int eb) {
+  int r_diff = er - sr;
+  int g_diff = eg - sg;
+  int b_diff = eb - sb;
+  int steps = 256;
+  
+  for (int i = 0; i < steps; i++) {
+    nSheetSetColor(
+      sheet, 
+      sr + i * r_diff / steps,
+      sg + i * g_diff / steps,
+      sb + i * b_diff / steps
+    );
+    
+    strip.show();
+  }
+}
