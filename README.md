@@ -1,7 +1,7 @@
 SacredDoorway
 =============
 
-I've updated the repo to include Neopixel and custom libraries.
+Check out the primary sketch or libraries/Sheet for more information about interacting with the Doorway.
 
 LED Strip Diagram
 =================
