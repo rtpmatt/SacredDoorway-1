@@ -10,6 +10,7 @@ Sheet sheet(s);
 uint8_t brightness = 1;
 
 void setup() {
+	
 	s.begin();
 	s.setBrightness(brightness); // Not really necessary, seems that the default of the library is max brightness
 	s.show(); // Initialize all pixels to 'off'
