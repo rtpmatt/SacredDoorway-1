@@ -13,14 +13,86 @@ void loop() {
 	}
 	//sheet.BlackSpiral(40);
 
+	/*
+	sheet.fade2xTo(1, 0, 0, 0, 255, 0, 0,
+				   2, 0, 0, 0, 0, 255, 0);
+	
+	sheet.fade3xTo(1, 0, 0, 0, 0, 0, 255,
+				   3, 0, 0, 0, 0, 255, 0,
+				   5, 0, 0, 0, 255, 0, 0);
+	*/
+	//sheet.rainbowPulse(1, 0);	
+	//testWipeDown();
+	//testWipeUp();
+
 	//sequenceOne();
 	//sequenceTwo();
 	//sequenceThree();
 	//sequenceFour();
 	//sequenceFive();
-	sequenceSix();
+	//sequenceSix();
 
 	delay(50);
+}
+
+void testWipeDown () {
+	sheet.WipeDownColor(1, 255, 0, 0);
+	delay(50);
+	sheet.SetColor(1, 0, 0, 0, true);
+
+	sheet.WipeDownColor(2, 255, 0, 0);
+	delay(50);
+	sheet.SetColor(2, 0, 0, 0, true);
+
+	sheet.WipeDownColor(3, 255, 0, 0);
+	delay(50);
+	sheet.SetColor(3, 0, 0, 0, true);
+
+	sheet.WipeDownColor(4, 255, 0, 0);
+	delay(50);
+	sheet.SetColor(4, 0, 0, 0, true);
+
+	sheet.WipeDownColor(5, 255, 0, 0);
+	delay(50);
+	sheet.SetColor(5, 0, 0, 0, true);
+
+	sheet.WipeDownColor(6, 255, 0, 0);
+	delay(50);
+	sheet.SetColor(6, 0, 0, 0, true);
+
+	sheet.WipeDownColor(7, 255, 0, 0);
+	delay(50);
+	sheet.SetColor(7, 0, 0, 0, true);
+}
+
+void testWipeUp () {
+	sheet.WipeUpColor(1, 255, 0, 0);
+	delay(50);
+	sheet.SetColor(1, 0, 0, 0, true);
+
+	sheet.WipeUpColor(2, 255, 0, 0);
+	delay(50);
+	sheet.SetColor(2, 0, 0, 0, true);
+
+	sheet.WipeUpColor(3, 255, 0, 0);
+	delay(50);
+	sheet.SetColor(3, 0, 0, 0, true);
+
+	sheet.WipeUpColor(4, 255, 0, 0);
+	delay(50);
+	sheet.SetColor(4, 0, 0, 0, true);
+
+	sheet.WipeUpColor(5, 255, 0, 0);
+	delay(50);
+	sheet.SetColor(5, 0, 0, 0, true);
+
+	sheet.WipeUpColor(6, 255, 0, 0);
+	delay(50);
+	sheet.SetColor(6, 0, 0, 0, true);
+
+	sheet.WipeUpColor(7, 255, 0, 0);
+	delay(50);
+	sheet.SetColor(7, 0, 0, 0, true);
 }
 
 void sequenceOne () {

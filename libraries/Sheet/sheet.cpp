@@ -47,8 +47,8 @@ void Sheet::SetColor(int sh, uint16_t r, uint16_t g, uint16_t b, bool show = fal
 }
 
 void Sheet::fadeTo (int sh, 
-				  uint16_t sr, uint16_t sg, uint16_t sb,
-				  uint16_t er, uint16_t eg, uint16_t eb) {
+					uint16_t sr, uint16_t sg, uint16_t sb,
+					uint16_t er, uint16_t eg, uint16_t eb) {
 	uint16_t r_diff = er - sr;
 	uint16_t g_diff = eg - sg;
 	uint16_t b_diff = eb - sb;
@@ -65,7 +65,66 @@ void Sheet::fadeTo (int sh,
 	}
 }
 
-void Sheet::RainbowPulse (uint8_t wait) {
+void Sheet::fade2xTo (int sh1, uint16_t sr1, uint16_t sg1, uint16_t sb1, uint16_t er1, uint16_t eg1, uint16_t eb1,
+					  int sh2, uint16_t sr2, uint16_t sg2, uint16_t sb2, uint16_t er2, uint16_t eg2, uint16_t eb2) {
+	int steps = 256;
+	
+	for (int i = 0; i < steps; i++) {
+		SetColor(	
+			sh1, 
+			sr1 + i * (er1 - sr1) / steps,
+			sg1 + i * (eg1 - sg1) / steps,
+			sb1 + i * (eb1 - sb1) / steps,
+			false
+		);
+
+		SetColor(	
+			sh2, 
+			sr2 + i * (er2 - sr2) / steps,
+			sg2 + i * (eg2 - sg2) / steps,
+			sb2 + i * (eb2 - sb2) / steps,
+			false
+		);
+
+		strip.show();
+	}
+}
+
+void Sheet::fade3xTo (int sh1, uint16_t sr1, uint16_t sg1, uint16_t sb1, uint16_t er1, uint16_t eg1, uint16_t eb1,
+					  int sh2, uint16_t sr2, uint16_t sg2, uint16_t sb2, uint16_t er2, uint16_t eg2, uint16_t eb2,
+					  int sh3, uint16_t sr3, uint16_t sg3, uint16_t sb3, uint16_t er3, uint16_t eg3, uint16_t eb3) {
+	int steps = 256;
+	
+	for (int i = 0; i < steps; i++) {
+		SetColor(	
+			sh1, 
+			sr1 + i * (er1 - sr1) / steps,
+			sg1 + i * (eg1 - sg1) / steps,
+			sb1 + i * (eb1 - sb1) / steps,
+			false
+		);
+
+		SetColor(	
+			sh2, 
+			sr2 + i * (er2 - sr2) / steps,
+			sg2 + i * (eg2 - sg2) / steps,
+			sb2 + i * (eb2 - sb2) / steps,
+			false
+		);
+
+		SetColor(	
+			sh3, 
+			sr3 + i * (er3 - sr3) / steps,
+			sg3 + i * (eg3 - sg3) / steps,
+			sb3 + i * (eb3 - sb3) / steps,
+			false
+		);
+
+		strip.show();
+	}
+}
+
+void Sheet::allRainbowPulse (uint8_t wait) {
 	uint8_t i, j;
 	
 	for(j = 0 ; j < 255; j++) {
@@ -110,6 +169,32 @@ void Sheet::RainbowPulse (uint8_t wait) {
 	}
 }
 
+void Sheet::rainbowPulse (int sh, int wait) {	
+	for(int j = 0 ; j < 255; j++) {
+		for(int i = sheets[sh - 1]; i < sheets[sh]; i++) {
+			strip.setPixelColor(i, Wheel(j));
+			strip.setPixelColor(419 - i, Wheel(j));
+		}
+		
+		strip.show();
+		
+		delay(wait);
+	}
+}
+
+void Sheet::rainbowPulseStrobe (int sh) {
+	for(int j = 0 ; j < 255; j++) {
+		for(int i = sheets[sh - 1]; i < sheets[sh]; i++) {
+			strip.setPixelColor(i, Wheel(j));
+			strip.setPixelColor(419 - i, Wheel(j));
+		}
+		strip.show();
+		
+		SetColor(sh, 0, 0, 0, true);
+		delay(20);
+	}
+}
+
 void Sheet::AllWhite() {
 	uint16_t pixel;
 	for (pixel = 0; pixel < 210; pixel++) {
@@ -122,22 +207,44 @@ void Sheet::AllWhite() {
 }
 
 void Sheet::WipeDownColor (int sh, uint16_t r, uint16_t g, uint16_t b) {
-	for (int i = sheets[sh - 1]; i < sheets[sh]; i++) {
-		strip.setPixelColor(i, r, g, b);
-		strip.setPixelColor(419 - i, r, g, b);
-		
-		strip.show();
-		delay(30);
+	if (sh == 2 || sh == 4 || sh == 6) {
+		for (int i = sheets[sh]; i > sheets[sh - 1]; i--) {
+			strip.setPixelColor(i, r, g, b);
+			strip.setPixelColor(419 - i, r, g, b);
+			
+			strip.show();
+			delay(30);
+		}
+	}
+	else {
+		for (int i = sheets[sh - 1]; i < sheets[sh]; i++) {
+			strip.setPixelColor(i, r, g, b);
+			strip.setPixelColor(419 - i, r, g, b);
+			
+			strip.show();
+			delay(30);
+		}
 	}
 }
 
 void Sheet::WipeUpColor (int sh, uint16_t r, uint16_t g, uint16_t b) {
-	for (int i = sheets[sh]; i > sheets[sh - 1]; i--) {
-		strip.setPixelColor(i, r, g, b);
-		strip.setPixelColor(419 - i, r, g, b);
-		
-		strip.show();
-		delay(30);
+	if (sh == 2 || sh == 4 || sh == 6) {
+		for (int i = sheets[sh - 1]; i < sheets[sh]; i++) {
+			strip.setPixelColor(i, r, g, b);
+			strip.setPixelColor(419 - i, r, g, b);
+			
+			strip.show();
+			delay(30);
+		}
+	}
+	else {
+		for (int i = sheets[sh]; i > sheets[sh - 1]; i--) {
+			strip.setPixelColor(i, r, g, b);
+			strip.setPixelColor(419 - i, r, g, b);
+			
+			strip.show();
+			delay(30);
+		}
 	}
 }
 
@@ -151,8 +258,8 @@ void Sheet::Strobe (int sh, int duration, uint16_t r, uint16_t g, uint16_t b) {
 }
 
 void Sheet::StrobeTo (int sh, 
-				  uint16_t sr, uint16_t sg, uint16_t sb,
-				  uint16_t er, uint16_t eg, uint16_t eb) {
+					  uint16_t sr, uint16_t sg, uint16_t sb,
+					  uint16_t er, uint16_t eg, uint16_t eb) {
 	uint16_t r_diff = er - sr;
 	uint16_t g_diff = eg - sg;
 	uint16_t b_diff = eb - sb;
