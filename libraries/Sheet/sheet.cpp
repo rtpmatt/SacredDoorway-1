@@ -1,7 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 #include <sheet.h>
 
-#define PIN 6
+#define PIN 7
 
 int sheets[8] = {
 	0,
@@ -195,6 +195,58 @@ void Sheet::rainbowPulseStrobe (int sh) {
 	}
 }
 
+void Sheet::allRainbowPulseStrobe () {
+	int i;
+
+	for(int j = 0 ; j < 255; j++) {
+		for(i = 0; i < 30; i++) {
+			strip.setPixelColor(i, Wheel(j));
+			strip.setPixelColor(419 - i, Wheel(j));
+		}
+		
+		for(i = 30; i < 60; i++) {
+			strip.setPixelColor(i, Wheel((j+10)));
+			strip.setPixelColor(419 - i, Wheel((j+10)));
+		}
+		
+		for(i = 60; i < 90; i++) {
+			strip.setPixelColor(i, Wheel((j+20)));
+			strip.setPixelColor(419 - i, Wheel((j+20)));
+		}
+		
+		for(i = 90; i < 120; i++) {
+			strip.setPixelColor(i, Wheel((j+30)));
+			strip.setPixelColor(419 - i, Wheel((j+30)));
+		}
+		
+		for(i = 120; i < 150; i++) {
+			strip.setPixelColor(i, Wheel((j+40)));
+			strip.setPixelColor(419 - i, Wheel((j+40)));
+		}
+		
+		for(i = 150; i < 180; i++) {
+			strip.setPixelColor(i, Wheel((j+50)));
+			strip.setPixelColor(419 - i, Wheel((j+50)));
+		}
+		
+		for(i = 180; i < 210; i++) {
+			strip.setPixelColor(i, Wheel((j+60)));
+			strip.setPixelColor(419 - i, Wheel((j+60)));
+		}
+		strip.show();
+		
+		SetColor(1, 0, 0, 0, false);
+		SetColor(2, 0, 0, 0, false);
+		SetColor(3, 0, 0, 0, false);
+		SetColor(4, 0, 0, 0, false);
+		SetColor(5, 0, 0, 0, false);
+		SetColor(6, 0, 0, 0, false);
+		SetColor(7, 0, 0, 0, true);
+
+		delay(20);
+	}
+}
+
 void Sheet::AllWhite() {
 	uint16_t pixel;
 	for (pixel = 0; pixel < 210; pixel++) {
@@ -206,7 +258,7 @@ void Sheet::AllWhite() {
 	}
 }
 
-void Sheet::WipeDownColor (int sh, uint16_t r, uint16_t g, uint16_t b) {
+void Sheet::wipeDown (int sh, uint16_t r, uint16_t g, uint16_t b) {
 	if (sh == 2 || sh == 4 || sh == 6) {
 		for (int i = sheets[sh]; i > sheets[sh - 1]; i--) {
 			strip.setPixelColor(i, r, g, b);
@@ -227,7 +279,7 @@ void Sheet::WipeDownColor (int sh, uint16_t r, uint16_t g, uint16_t b) {
 	}
 }
 
-void Sheet::WipeUpColor (int sh, uint16_t r, uint16_t g, uint16_t b) {
+void Sheet::wipeUp (int sh, uint16_t r, uint16_t g, uint16_t b) {
 	if (sh == 2 || sh == 4 || sh == 6) {
 		for (int i = sheets[sh - 1]; i < sheets[sh]; i++) {
 			strip.setPixelColor(i, r, g, b);
@@ -245,6 +297,35 @@ void Sheet::WipeUpColor (int sh, uint16_t r, uint16_t g, uint16_t b) {
 			strip.show();
 			delay(30);
 		}
+	}
+}
+
+void Sheet::wipeUp (int sh, uint32_t rgb) {
+	if (sh == 2 || sh == 4 || sh == 6) {
+		for (int i = sheets[sh - 1]; i < sheets[sh]; i++) {
+			strip.setPixelColor(i, rgb);
+			strip.setPixelColor(419 - i, rgb);
+			
+			strip.show();
+			delay(50);
+		}
+	}
+	else {
+		for (int i = sheets[sh]; i > sheets[sh - 1]; i--) {
+			strip.setPixelColor(i, rgb);
+			strip.setPixelColor(419 - i, rgb);
+			
+			strip.show();
+			delay(50);
+		}
+	}
+}
+
+void Sheet::wipeUpRainbow (int sh) {
+	int color = 0;
+	while (color < 256) {
+		wipeUp(sh, Wheel(color));
+		color = color + 32;
 	}
 }
 
@@ -263,7 +344,7 @@ void Sheet::StrobeTo (int sh,
 	uint16_t r_diff = er - sr;
 	uint16_t g_diff = eg - sg;
 	uint16_t b_diff = eb - sb;
-	int steps = 20;
+	int steps = 32;
 	
 	for (int i = 0; i < steps; i++) {
 		SetColor(	
@@ -273,18 +354,15 @@ void Sheet::StrobeTo (int sh,
 			sb + i * b_diff / steps,
 			true
 		);
-		delay(20);
 
-		if (i != steps - 1) {
-			SetColor(	
-				sh, 
-				0,
-				0,
-				0,
-				true
-			);
-			delay(20);
-		}
+		SetColor(	
+			sh, 
+			0,
+			0,
+			0,
+			true
+		);
+		delay(20);
 	}
 }
 
@@ -314,6 +392,16 @@ void Sheet::BlackSpiral (uint8_t wait) {
 		
 		strip.show();
 		delay(wait);
+	}
+}
+
+void Sheet::spiralTo(int sh, uint16_t r, uint16_t g, uint16_t b) {
+	for (int i = sheets[sh - 1]; i < sheets[sh]; i++) {
+		strip.setPixelColor(i, r, g, b);
+		int offset = 419 - 30;
+		strip.setPixelColor(offset + i, r, g, b);
+		strip.show();
+		delay(20);
 	}
 }
 
