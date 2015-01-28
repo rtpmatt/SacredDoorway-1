@@ -1,67 +1,62 @@
 SacredDoorway
 =============
 
-I've updated the repo to include Neopixel and custom libraries.
+Check out the primary sketch or libraries/Sheet for more information about interacting with the Doorway.
 
 LED Strip Diagram
 =================
 
 Shows the directional flow of data and segments.
 ```
-            Left                           Right
-
-  1   2   3   4   5   6   7      7   6   5   4   3   2   1  ---- Sheet Number
-
-       -->     -->     -->        -->     -->     -->
-  0  59  60  119 120 179 180    239 240 299 300 359 360 419
-  |   |   |   |   |   |   |      |   |   |   |   |   |   |
-  |   |   |   |   |   |   |      |   |   |   |   |   |   |
-  v   ^   v   ^   v   ^   v      ^   v   ^   v   ^   v   ^
-  |   |   |   |   |   |   |      |   |   |   |   |   |   |
-  |   |   |   |   |   |   |      |   |   |   |   |   |   |
- 29  30  89  90  149 150 209    210 269 270 329 330 389 390
-   -->     -->     -->     -->>--     -->     -->     -->
+              Left                            Right
+    1   2   3   4   5   6   7       7   6   5   4   3   2   1  ---- Sheet Number
+    0  59->60  119>120 179>180     239>240 299>300 359>360 419
+F   |   |   |   |   |   |   |   B   |   |   |   |   |   |   |   F
+R   |   |   |   |   |   |   |   A   |   |   |   |   |   |   |   R
+O   v   ^   v   ^   v   ^   v   C   ^   v   ^   v   ^   v   ^   O
+N   |   |   |   |   |   |   |   K   |   |   |   |   |   |   |   N
+T   |   |   |   |   |   |   |       |   |   |   |   |   |   |   T
+   29->30  89->90  149>150 209-->--210 269>270 329>330 389>390
 
 ```
 
-In the Arduino_Neopixel vernacular you could address the entire first sheet (top to bottom) by doing something like:
-
+Here's a basic breakdown of Sheet class
 ```cpp
-// Top down -- Sheet 1
-for (int i = 0; i < 30; i++) {
-	strip.setPixelColor(i, 255, 255, 255); // All white - left
-	strip.setPixelColor(419 - i, 255, 255, 255); // All White - right
-}
+Sheet sheet;
 
-// Bottom up -- Sheet 1
-for (int i = 29; i >= 0; i--) {
-	strip.setPixelColor(i, 255, 255, 255); // All white - left
-	strip.setPixelColor(419 - i, 255, 255, 255); // All White - right
-}
+// Set the first sheet to white and update the display. Passing false as the last parameter will
+// not update the display
+sheet.SetColor(1, 255, 255, 255, true);
 
-// More concise example for offsets...
-int sheet3start = 60;
-int sheet3stop  = 89;
+// Illuminate all sheets in a fading cascade of rainbows. This could be iterated over
+// several times to extend the effect's duration.
+sheet.RainbowPulse();
 
-for (sheet3start; i < sheet3stop; i++) {
-	strip.setPixelColor(i, 255, 255, 255); // All white - left
-	strip.setPixelColor(419 - i, 255, 255, 255); // All White - right
-}
+// Fade the first sheet from black (off) to white.
+// The color math here will nicely transition between two colors and can be
+// chained for added niceness.
+sheet.fadeTo(1, 0, 0, 0, 255, 255, 255);
 
-// Also the strip.show() function must be called for the Pixels to actually turn on.
-// This can be accomplished like follows
-for (int i = 0; i < 30; i++) {
-	strip.setPixelColor(i, 255, 255, 255); // All white - left
-	strip.setPixelColor(419 - i, 255, 255, 255); // All White - right
-}
-strip.show();
+// A sweeping transition that turns all sheets to white
+sheet.AllWhite();
 
-// or ---- for a gradual turn on of each LED top to bottom, delay() exists in Arduino.h 
-for (int i = 0; i < 30; i++) {
-	strip.setPixelColor(i, 255, 255, 255); // All white - left
-	strip.setPixelColor(419 - i, 255, 255, 255); // All White - right
+// Fill sheet one with red starting at the top
+sheet.WipeDownColor(1, 255, 0, 0); 
 
-	delay(500); // ms 
-	strip.show();
-}
+// Fill sheet one with red starting at the bottom
+sheet.WipeUpColor(1, 255, 0, 0);
+
+// Strobe the first sheet 20 times, green
+sheet.Strobe(1, 20, 0, 255, 0); 
+
+// Like fadeTo, this takes two sets of RGB values and will strobe 20 times as it 
+// transitions to the last color
+sheet.StrobeTo(1, 0, 0, 0, 255, 255, 255);
+
+// Does a blinds sort of effect on all sheets from whatever color they're currently on
+// to black, with 20ms in between each transition
+sheet.BlackSpiral(20);
+
+// Performs a bottom to top color animation on each chakra (1st sheet)
+sheet.Chakras();
 ```

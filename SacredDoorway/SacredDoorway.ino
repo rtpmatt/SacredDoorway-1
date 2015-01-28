@@ -1,151 +1,574 @@
 #include <Adafruit_NeoPixel.h>
+#include <sheet.h>
 
-/*
- * The 'strip' is composed of 419 (it should have been 420, but it's the last led so who cares)
- * LEDs with daisy chained segments. Which can make addressing a specific sheet a little intense.
- *
- * Basically the first 30 LEDs are the front left side of the first sheet and the last 29 are the front right side.
- * Meaning that to address the first led of the front right side you would need to address its offset 
- * from the last LED of the front left side (which should be 419, i.e, 419 would be the first LED for the front
- * sheet on the right side.)
- 
- * Diagram to show the directional flow of data. 
- *
- *        Left                      Right
- *       -->     -->     -->        -->     -->     -->
- *  0  59  60  119 120 179 210    240 270 300 330 360 390 419
- *  |   |   |   |   |   |   |      |   |   |   |   |   |   |
- *  |   |   |   |   |   |   |      |   |   |   |   |   |   |
- *  v   ^   v   ^   v   ^   v      ^   v   ^   v   ^   v   ^
- *  |   |   |   |   |   |   |      |   |   |   |   |   |   |
- *  |   |   |   |   |   |   |      |   |   |   |   |   |   |
- * 29  30  89  90  149 150 181    211 241 271 301 331 361 391
- *   -->     -->     -->     -->>--     -->     -->     -->
- *
- * Make sense? Good. I'll get some constructors defined for each sheet
- * so you'll just be able to say sheet1.set(4) or sheet5.set(10) to handle the offsets.
- *
- * The remainder of the code was ganked out of the strandtest library and just 
- * does a cascading rainbow over the entire strip.
- *
- * These LEDs are full color (so yeah, you can do pink).
- */
-
-#define PIN 6
-
-// Parameter 1 = number of pixels in strip
-// Parameter 2 = Arduino pin number (most are valid)
-// Parameter 3 = pixel type flags, add together as needed:
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(419, PIN, NEO_GRB + NEO_KHZ800);
+Sheet sheet;
 
 void setup() {
-  strip.begin();
-  strip.setBrightness(255); // Not really necessary, seems that the default of the library is max brightness
-  strip.show(); // Initialize all pixels to 'off'
+	sheet.init();
 }
 
 void loop() {
-  rainbow2(1);
+	for (int i = 0; i < 5; i++) {
+		sheet.allRainbowPulse(1);
+	}
+
+	sheet.BlackSpiral(20);
+	sheet.rainbowPulseStrobe(1);
+	sheet.BlackSpiral(20);
+
+	sequenceOne();
+	sequenceTwo();
+	sequenceThree();
+	sequenceFour();
+	sequenceFive();
+	sequenceSix();
+	sequenceSeven();
+	sequenceEight();
+	sequenceNine();
 }
 
-/**
- * Rainbow fade on each sheet
- */
-void rainbow(uint8_t wait) {
-  uint16_t i, j;
+void sequenceOne () {
+	sheet.Strobe(1, 20, 255, 255, 255);
+	sheet.Strobe(3, 20, 255, 145, 0);
 
-  for(j=0; j<256; j++) {
-    for(i=0; i<strip.numPixels(); i++) {
-      strip.setPixelColor(i, Wheel((i+j) & 255));
-    }
-    strip.show();
-    delay(wait);
-  }
+	sheet.wipeDown(1, 255, 145, 0);
+	sheet.wipeDown(3, 0, 145, 255);
+	sheet.wipeDown(5, 0, 255, 0);
+	sheet.fadeTo(3, 0, 145, 255, 0, 0, 0);
+	sheet.fadeTo(5, 0, 255, 0, 0, 0, 0);
+	sheet.wipeDown(5, 255, 145, 0);
+	sheet.wipeDown(5, 0, 145, 255);
+	sheet.fadeTo(5, 0, 145, 255, 0, 0, 0);
+	
+	sheet.wipeDown(1, 0, 145, 255);
+	sheet.wipeDown(1, 255, 255, 255);
+	sheet.fadeTo(1, 255, 255, 255, 255, 0, 0);
+	sheet.wipeDown(5, 0, 0, 0);
+
+	sheet.fadeTo(4, 0, 0, 0, 145, 145, 0);
+	sheet.Strobe(6, 20, 255, 255, 255);
+
+	sheet.fadeTo(7, 255, 255, 0, 0, 0, 0);
+	sheet.fadeTo(4, 145, 145, 0, 0, 0, 0);
+
+	sheet.wipeDown(7, 0, 0, 0);
 }
 
-void rainbow1(uint8_t wait) {
-  uint16_t i, j;
-
-  for(j=0; j<256; j++) {
-    for(i=0; i < 29; i++) {
-      strip.setPixelColor(i, Wheel((i+j) & 255));
-      strip.setPixelColor(419 - i, Wheel((i+j) & 255));
-    }
-    strip.show();
-    delay(wait);
-  }
+// Red & White
+void sequenceTwo () {
+	sheet.wipeUp(1, 255, 255, 255);
+	sheet.Strobe(6, 20, 255, 255, 255);
+	sheet.wipeDown(5, 255, 0, 0);
+	sheet.wipeDown(1, 255, 0, 0);
+	sheet.Strobe(2, 2, 255, 255, 255);
+	sheet.Strobe(3, 2, 255, 255, 255);
+	sheet.Strobe(4, 2, 255, 255, 255);
+	sheet.Strobe(3, 2, 255, 255, 255);
+	sheet.Strobe(2, 2, 255, 255, 255);
+	sheet.wipeUp(5, 255, 255, 255);
+	sheet.BlackSpiral(10);
 }
 
-void rainbow2(uint8_t wait) {
-  uint16_t i, j;
-
-  for(j=0; j<256; j++) {
-    for(i=150; i < 179; i++) {
-      strip.setPixelColor(i, Wheel((i+j) & 255));
-      strip.setPixelColor(419 - i, Wheel((i+j) & 255));
-    }
-    strip.show();
-    //delay(wait);
-  }
-  
-  brighttron();
+void sequenceThree () {
+	sheet.StrobeTo(1, 0, 0, 0, 255, 0, 0);
+	sheet.StrobeTo(2, 0, 0, 0, 255, 255, 0);
+	sheet.StrobeTo(3, 0, 0, 0, 255, 145, 0);
+	sheet.StrobeTo(4, 0, 0, 0, 0, 255, 0);
+	sheet.StrobeTo(5, 0, 0, 0, 0, 128, 255);
+	sheet.StrobeTo(6, 0, 0, 0, 255, 0, 255);
+	sheet.StrobeTo(7, 0, 0, 0, 255, 255, 255);
+	sheet.BlackSpiral(100);
 }
 
-void brighttron(){  
-  for (int i = 60; i <= 89; i++)
-  {
-    strip.setPixelColor(i, 255, 255, 255);
-    strip.setPixelColor(419 - i, 255, 255, 255);
-  }
-  
-  strip.show();
+void sequenceFour () {
+	sheet.fadeTo(5, 0, 0, 0, 0, 255, 0);
+	sheet.wipeDown(7, 178, 54, 170);
+
+	sheet.fadeTo(3, 0, 0, 0, 255, 255, 0);
+	sheet.wipeUp(7, 0, 0, 0);
+	
+	sheet.wipeDown(5, 255, 255, 0);
+	sheet.wipeDown(7, 178, 54, 170);
+	
+	sheet.fadeTo(2, 0, 0, 0, 0, 255, 0);
+	sheet.wipeUp(7, 0, 0, 0);
+
+	sheet.wipeUp(3, 0, 255, 0);
+	sheet.wipeDown(7, 178, 54, 170);
+	
+	sheet.wipeUp(1, 178, 54, 170);
+	sheet.wipeUp(7, 0, 0, 0);
+	
+	sheet.wipeDown(1, 54, 178, 62);
+	sheet.wipeDown(7, 178, 54, 170);
+	
+	sheet.fadeTo(5, 0, 255, 0, 0, 0, 0);
+	sheet.wipeUp(7, 0, 0, 0);
+
+	sheet.fadeTo(2, 0, 255, 0, 0, 0, 0);
+	sheet.fadeTo(3, 255, 255, 0, 0, 0, 0);
+
+	sheet.fadeTo(1, 54, 178, 62, 0, 0, 0);
+	
 }
 
-/**
- * Function to light the first sheet and proceed through each 'chakra'
- * illuminating each one by its color as specific intervals
- */
-void chakraColors() {
-  uint32_t chakras[] = {
-    strip.Color(255, 255, 255), // white
-    strip.Color(230, 0, 255),   // purple
-    strip.Color(34, 0, 255),    // blue
-    strip.Color(0, 255, 34),    // green
-    strip.Color(255, 247, 0),   // yellow
-    strip.Color(255, 111, 0),   // orange
-    strip.Color(255, 0, 0)      // red
-  };
-  
-  uint16_t cur = 6;
-  int i;
-  
-  for(i = 29; i >= 0; i--) {
-    if (i == 26 || i == 22 || i == 18 || i == 14 || i == 10 || i == 6) {
-      cur--;
-    }
-    
-    strip.setPixelColor(i, chakras[cur]);
-    strip.setPixelColor(420 - i, chakras[cur]);
-    
-    strip.show();
-    
-    delay(50);
-    
-    strip.setPixelColor(i, 0);
-    strip.setPixelColor(420 - i, 0);
-  }
+void sequenceFive () {
+	sheet.Strobe(7, 5, 255, 255, 255);
+	sheet.Strobe(6, 5, 255, 255, 255);
+	sheet.Strobe(5, 5, 255, 255, 255);
+	sheet.Strobe(4, 5, 255, 255, 255);
+	sheet.Strobe(3, 5, 255, 255, 255);
+	sheet.Strobe(2, 5, 255, 255, 255);
+	sheet.Strobe(1, 5, 255, 255, 255);
+
+	sheet.Strobe(7, 4, 255, 255, 255);
+	sheet.Strobe(6, 4, 255, 255, 255);
+	sheet.Strobe(5, 4, 255, 255, 255);
+	sheet.Strobe(4, 4, 255, 255, 255);
+	sheet.Strobe(3, 4, 255, 255, 255);
+	sheet.Strobe(2, 4, 255, 255, 255);
+	sheet.Strobe(1, 4, 255, 255, 255);
+
+	sheet.Strobe(7, 3, 255, 255, 255);
+	sheet.Strobe(6, 3, 255, 255, 255);
+	sheet.Strobe(5, 3, 255, 255, 255);
+	sheet.Strobe(4, 3, 255, 255, 255);
+	sheet.Strobe(3, 3, 255, 255, 255);
+	sheet.Strobe(2, 3, 255, 255, 255);
+	sheet.Strobe(1, 3, 255, 255, 255);
+
+	sheet.Strobe(7, 2, 255, 255, 255);
+	sheet.Strobe(6, 2, 255, 255, 255);
+	sheet.Strobe(5, 2, 255, 255, 255);
+	sheet.Strobe(4, 2, 255, 255, 255);
+	sheet.Strobe(3, 2, 255, 255, 255);
+	sheet.Strobe(2, 2, 255, 255, 255);
+	sheet.Strobe(1, 2, 255, 255, 255);
+
+	sheet.Strobe(7, 1, 255, 255, 255);
+	sheet.Strobe(6, 1, 255, 255, 255);
+	sheet.Strobe(5, 1, 255, 255, 255);
+	sheet.Strobe(4, 1, 255, 255, 255);
+	sheet.Strobe(3, 1, 255, 255, 255);
+	sheet.Strobe(2, 1, 255, 255, 255);
+	sheet.Strobe(1, 1, 255, 255, 255);
+
+	sheet.Strobe(7, 1, 255, 255, 255);
+	sheet.Strobe(6, 1, 255, 255, 255);
+	sheet.Strobe(5, 1, 255, 255, 255);
+	sheet.Strobe(4, 1, 255, 255, 255);
+	sheet.Strobe(3, 1, 255, 255, 255);
+	sheet.Strobe(2, 1, 255, 255, 255);
+	sheet.Strobe(1, 1, 255, 255, 255);
+
+	sheet.Strobe(7, 1, 255, 255, 255);
+	sheet.Strobe(6, 1, 255, 255, 255);
+	sheet.Strobe(5, 1, 255, 255, 255);
+	sheet.Strobe(4, 1, 255, 255, 255);
+	sheet.Strobe(3, 1, 255, 255, 255);
+	sheet.Strobe(2, 1, 255, 255, 255);
+	sheet.Strobe(1, 1, 255, 255, 255);
+
+	sheet.SetColor(1, 255, 255, 255, true);
+
+	sheet.Strobe(7, 1, 255, 0, 0);
+	sheet.Strobe(6, 1, 255, 130, 0);
+	sheet.Strobe(5, 1, 255, 255, 0);
+	sheet.Strobe(4, 1, 0, 255, 0);
+	sheet.Strobe(3, 1, 0, 255, 255);
+	sheet.Strobe(2, 1, 125, 0, 255);
+
+	sheet.Strobe(7, 1, 255, 0, 0);
+	sheet.Strobe(6, 1, 255, 130, 0);
+	sheet.Strobe(5, 1, 255, 255, 0);
+	sheet.Strobe(4, 1, 0, 255, 0);
+	sheet.Strobe(3, 1, 0, 255, 255);
+	sheet.Strobe(2, 1, 125, 0, 255);
+
+	sheet.Strobe(7, 1, 255, 0, 0);
+	sheet.Strobe(6, 1, 255, 130, 0);
+	sheet.Strobe(5, 1, 255, 255, 0);
+	sheet.Strobe(4, 1, 0, 255, 0);
+	sheet.Strobe(3, 1, 0, 255, 255);
+	sheet.Strobe(2, 1, 125, 0, 255);
+
+	sheet.Strobe(7, 1, 255, 0, 0);
+	sheet.Strobe(6, 1, 255, 130, 0);
+	sheet.Strobe(5, 1, 255, 255, 0);
+	sheet.Strobe(4, 1, 0, 255, 0);
+	sheet.Strobe(3, 1, 0, 255, 255);
+	sheet.Strobe(2, 1, 125, 0, 255);
+
+	sheet.Strobe(7, 1, 255, 0, 0);
+	sheet.Strobe(6, 1, 255, 130, 0);
+	sheet.Strobe(5, 1, 255, 255, 0);
+	sheet.Strobe(4, 1, 0, 255, 0);
+	sheet.Strobe(3, 1, 0, 255, 255);
+	sheet.Strobe(2, 1, 125, 0, 255);
+
+	sheet.Strobe(3, 1, 255, 130, 0);
+	sheet.Strobe(4, 1, 255, 255, 0);
+	sheet.Strobe(5, 1, 0, 255, 0);
+	sheet.Strobe(6, 1, 0, 255, 255);
+	sheet.Strobe(7, 1, 125, 0, 255);
+
+	sheet.Strobe(2, 1, 125, 0, 255);
+	sheet.Strobe(3, 1, 255, 130, 0);
+	sheet.Strobe(4, 1, 255, 255, 0);
+	sheet.Strobe(5, 1, 0, 255, 0);
+	sheet.Strobe(6, 1, 0, 255, 255);
+	sheet.Strobe(7, 1, 125, 0, 255);
+
+	sheet.Strobe(2, 1, 125, 0, 255);
+	sheet.Strobe(3, 1, 255, 130, 0);
+	sheet.Strobe(4, 1, 255, 255, 0);
+	sheet.Strobe(5, 1, 0, 255, 0);
+	sheet.Strobe(6, 1, 0, 255, 255);
+	sheet.Strobe(7, 1, 125, 0, 255);
+
+	sheet.Strobe(2, 1, 125, 0, 255);
+	sheet.Strobe(3, 1, 255, 130, 0);
+	sheet.Strobe(4, 1, 255, 255, 0);
+	sheet.Strobe(5, 1, 0, 255, 0);
+	sheet.Strobe(6, 1, 0, 255, 255);
+	sheet.Strobe(7, 1, 125, 0, 255);
+
+	sheet.Strobe(2, 1, 125, 0, 255);
+	sheet.Strobe(3, 1, 255, 130, 0);
+	sheet.Strobe(4, 1, 255, 255, 0);
+	sheet.Strobe(5, 1, 0, 255, 0);
+	sheet.Strobe(6, 1, 0, 255, 255);
+	sheet.Strobe(7, 1, 125, 0, 255);
+
+	sheet.Strobe(2, 2, 125, 0, 255);
+	sheet.Strobe(3, 2, 255, 130, 0);
+	sheet.Strobe(4, 2, 255, 255, 0);
+	sheet.Strobe(5, 2, 0, 255, 0);
+	sheet.Strobe(6, 2, 0, 255, 255);
+	sheet.Strobe(7, 2, 125, 0, 255);
+
+	sheet.Strobe(2, 3, 125, 0, 255);
+	sheet.Strobe(3, 3, 255, 130, 0);
+	sheet.Strobe(4, 3, 255, 255, 0);
+	sheet.Strobe(5, 3, 0, 255, 0);
+	sheet.Strobe(6, 3, 0, 255, 255);
+	sheet.Strobe(7, 3, 125, 0, 255);
+
+	sheet.Strobe(2, 4, 125, 0, 255);
+	sheet.Strobe(3, 4, 255, 130, 0);
+	sheet.Strobe(4, 4, 255, 255, 0);
+	sheet.Strobe(5, 4, 0, 255, 0);
+	sheet.Strobe(6, 4, 0, 255, 255);
+	sheet.Strobe(7, 4, 125, 0, 255);
+
+	sheet.Strobe(2, 5, 125, 0, 255);
+	sheet.Strobe(3, 5, 255, 130, 0);
+	sheet.Strobe(4, 5, 255, 255, 0);
+	sheet.Strobe(5, 5, 0, 255, 0);
+	sheet.Strobe(6, 5, 0, 255, 255);
+	sheet.Strobe(7, 5, 125, 0, 255);
+
+	sheet.Strobe(1, 1, 125, 0, 255);
+	sheet.Strobe(1, 1, 255, 130, 0);
+	sheet.Strobe(1, 1, 255, 255, 0);
+	sheet.Strobe(1, 1, 0, 255, 0);
+	sheet.Strobe(1, 1, 0, 255, 255);
+	sheet.Strobe(1, 1, 125, 0, 255);
+
+	sheet.Strobe(1, 1, 125, 0, 255);
+	sheet.Strobe(1, 1, 255, 130, 0);
+	sheet.Strobe(1, 1, 255, 255, 0);
+	sheet.Strobe(1, 1, 0, 255, 0);
+	sheet.Strobe(1, 1, 0, 255, 255);
+	sheet.Strobe(1, 1, 125, 0, 255);
 }
 
-// Input a value 0 to 255 to get a color value.
-uint32_t Wheel(byte WheelPos) {
-  if(WheelPos < 85) {
-   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
-  } else if(WheelPos < 170) {
-   WheelPos -= 85;
-   return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
-  } else {
-   WheelPos -= 170;
-   return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-  }
+// Can we get some orange
+void sequenceSix () {
+	sheet.wipeUp(2, 0, 0, 0);
+	sheet.SetColor(6, 0, 134, 207, true);
+	//sheet.SetColor(7, 0, 134, 207, true);
+	sheet.wipeDown(3, 207, 73, 0);
+
+	sheet.wipeDown(1, 176, 0, 207);
+	sheet.wipeUp(1, 0, 0, 0);
+
+	sheet.wipeDown(3, 0, 0, 0);
+	sheet.wipeDown(2, 207, 73, 0);
+	
+	sheet.Chakras();
 }
 
+void sequenceSeven () {
+	sheet.wipeDown(1, 255, 255, 255);
+	sheet.wipeDown(1, 0, 0, 0);
+	sheet.fade2xTo(3, 0, 0, 0, 255, 132, 0,
+				   5, 0, 0, 0, 0, 132, 255);
+	sheet.wipeUpRainbow(5);
+	sheet.wipeDown(5, 255, 255, 255);
+	sheet.fade3xTo(3, 255, 132, 0, 0, 0, 0,
+				   2, 0, 0, 0, 255, 132, 0,
+				   5, 255, 255, 255, 0, 0, 0);
+	sheet.StrobeTo(2, 255, 132, 0, 0, 0, 0);
+	sheet.wipeUp(4, 255, 255, 255);
+	sheet.StrobeTo(6, 0, 0, 0, 255, 0, 0);
+	sheet.StrobeTo(4, 255, 255, 255, 0, 132, 255);
+	sheet.fadeTo(4, 0, 132, 255, 0, 0, 0);
+}
+
+void sequenceEight () {
+	sheet.fade3xTo(3, 0, 0, 0, 255, 255, 0,
+				   4, 0, 0, 0, 0, 255, 255,
+				   6, 0, 0, 0, 255, 0, 255);
+	sheet.fade3xTo(5, 0, 0, 0, 255, 255, 0,
+				   3, 255, 255, 0, 255, 0, 255,
+				   6, 255, 0, 255, 0, 0, 0);
+	sheet.StrobeTo(5, 255, 255, 0, 0, 255, 255);
+	sheet.StrobeTo(4, 0, 255, 255, 255, 255, 0);
+	sheet.StrobeTo(4, 255, 255, 0, 0, 0, 0);
+	sheet.StrobeTo(3, 255, 0, 255, 0, 0, 0);
+	sheet.StrobeTo(2, 0, 0, 0, 255, 0, 255);
+	sheet.SetColor(2, 255, 0, 255, true);
+	sheet.wipeDown(2, 0, 0, 0);
+	sheet.wipeUp(1, 255, 255, 0);
+	sheet.wipeDown(6, 255, 255, 0);
+	sheet.wipeUp(1, 255, 0, 255);
+	sheet.wipeDown(6, 255, 0, 255);
+	sheet.wipeUp(1, 0, 255, 255);
+	sheet.wipeDown(6, 0, 255, 255);
+	sheet.wipeUp(1, 0, 0, 0);
+	sheet.wipeDown(6, 0, 0, 0);
+	sheet.wipeDown(2, 0, 0, 0);
+
+	sheet.fade3xTo(3, 0, 0, 0, 255, 98, 0,
+				   4, 0, 0, 0, 0, 255, 98,
+				   6, 0, 0, 0, 98, 0, 255);
+	sheet.fade3xTo(5, 0, 0, 0, 255, 98, 0,
+				   3, 255, 98, 0, 98, 0, 255,
+				   6, 98, 0, 255, 0, 0, 0);
+	sheet.StrobeTo(5, 255, 98, 0, 0, 255, 98);
+	sheet.StrobeTo(4, 0, 255, 98, 255, 98, 0);
+	sheet.StrobeTo(4, 255, 98, 0, 0, 0, 0);
+	sheet.StrobeTo(3, 98, 0, 255, 0, 0, 0);
+	sheet.StrobeTo(2, 0, 0, 0, 98, 0, 255);
+	sheet.SetColor(2, 98, 0, 255, true);
+	sheet.wipeDown(2, 0, 0, 0);
+	sheet.wipeUp(1, 255, 98, 0);
+	sheet.wipeDown(6, 255, 98, 0);
+	sheet.wipeUp(1, 98, 0, 255);
+	sheet.wipeDown(6, 98, 0, 255);
+	sheet.wipeUp(1, 0, 255, 98);
+	sheet.wipeDown(6, 0, 255, 98);
+	sheet.wipeUp(1, 0, 0, 0);
+	sheet.wipeDown(6, 0, 0, 0);
+	sheet.wipeDown(2, 0, 0, 0);
+
+
+	sheet.fade3xTo(3, 0, 0, 0, 89, 255, 0,
+				   4, 0, 0, 0, 0, 89, 255,
+				   6, 0, 0, 0, 255, 0, 89);
+	sheet.fade3xTo(5, 0, 0, 0, 89, 255, 0,
+				   3, 89, 255, 0, 255, 0, 89,
+				   6, 255, 0, 89, 0, 0, 0);
+	sheet.StrobeTo(5, 89, 255, 0, 0, 89, 255);
+	sheet.StrobeTo(4, 0, 89, 255, 89, 255, 0);
+	sheet.StrobeTo(4, 89, 255, 0, 0, 0, 0);
+	sheet.StrobeTo(3, 255, 0, 89, 0, 0, 0);
+	sheet.StrobeTo(2, 0, 0, 0, 255, 0, 89);
+	sheet.SetColor(2, 255, 0, 89, true);
+	sheet.wipeDown(2, 0, 0, 0);
+	sheet.wipeUp(1, 89, 255, 0);
+	sheet.wipeDown(6, 89, 255, 0);
+	sheet.wipeUp(1, 255, 0, 89);
+	sheet.wipeDown(6, 255, 0, 89);
+	sheet.wipeUp(1, 0, 255, 89);
+	sheet.wipeDown(6, 0, 255, 89);
+	sheet.wipeUp(1, 0, 0, 0);
+	sheet.wipeDown(6, 0, 0, 0);
+	sheet.wipeDown(2, 0, 0, 0);
+}
+
+void sequenceNine () {
+	//sheet.rainbowPulseStrobe(1);
+	sheet.Strobe(1, 1, 0, 255, 255);
+	sheet.Strobe(2, 1, 127, 0, 255);
+	sheet.Strobe(3, 1, 255, 0, 0);
+	sheet.Strobe(4, 1, 127, 255, 0);
+	sheet.Strobe(5, 1, 127, 0, 255);
+	sheet.Strobe(6, 1, 255, 0, 0);
+	sheet.Strobe(7, 1, 127, 255, 0);
+
+	sheet.Strobe(1, 1, 127, 255, 0);
+	sheet.Strobe(2, 1, 0, 255, 255);
+	sheet.Strobe(3, 1, 127, 0, 255);
+	sheet.Strobe(4, 1, 255, 0, 0);
+	sheet.Strobe(5, 1, 127, 255, 0);
+	sheet.Strobe(6, 1, 0, 255, 255);
+	sheet.Strobe(7, 1, 127, 0, 255);
+
+	sheet.Strobe(1, 1, 0, 255, 255);
+	sheet.Strobe(2, 1, 127, 0, 255);
+	sheet.Strobe(3, 1, 255, 0, 0);
+	sheet.Strobe(4, 1, 127, 255, 0);
+	sheet.Strobe(5, 1, 0, 255, 255);
+	sheet.Strobe(6, 1, 127, 0, 255);
+	sheet.Strobe(7, 1, 127, 255, 0);
+
+	sheet.Strobe(1, 1, 127, 0, 255);
+	sheet.Strobe(2, 1, 255, 0, 0);
+	sheet.Strobe(3, 1, 127, 255, 0);
+	sheet.Strobe(4, 1, 0, 255, 255);
+	sheet.Strobe(5, 1, 127, 0, 255);
+	sheet.Strobe(6, 1, 127, 255, 0);
+	sheet.Strobe(7, 1, 0, 255, 255);
+
+	sheet.Strobe(1, 1, 255, 0, 0);
+	sheet.Strobe(2, 1, 127, 255, 0);
+	sheet.Strobe(3, 1, 0, 255, 255);
+	sheet.Strobe(4, 1, 127, 0, 255);
+	sheet.Strobe(5, 1, 127, 255, 0);
+	sheet.Strobe(6, 1, 0, 255, 255);
+	sheet.Strobe(7, 1, 127, 0, 255);
+
+	sheet.Strobe(1, 1, 127, 255, 0);
+	sheet.Strobe(2, 1, 0, 255, 255);
+	sheet.Strobe(3, 1, 127, 0, 255);
+	sheet.Strobe(4, 1, 127, 255, 0);
+	sheet.Strobe(5, 1, 0, 255, 255);
+	sheet.Strobe(6, 1, 127, 0, 255);
+	sheet.Strobe(7, 1, 255, 0, 0);
+
+	sheet.Strobe(1, 1, 0, 255, 255);
+	sheet.Strobe(2, 1, 127, 0, 255);
+	sheet.Strobe(3, 1, 127, 255, 0);
+	sheet.Strobe(4, 1, 0, 255, 255);
+	sheet.Strobe(5, 1, 127, 0, 255);
+	sheet.Strobe(6, 1, 255, 0, 0);
+	sheet.Strobe(7, 1, 127, 255, 0);
+
+
+	sheet.Strobe(1, 2, 0, 255, 255);
+	sheet.Strobe(2, 2, 127, 0, 255);
+	sheet.Strobe(3, 2, 255, 0, 0);
+	sheet.Strobe(4, 2, 127, 255, 0);
+	sheet.Strobe(5, 2, 127, 0, 255);
+	sheet.Strobe(6, 2, 255, 0, 0);
+	sheet.Strobe(7, 2, 127, 255, 0);
+
+	sheet.Strobe(1, 2, 127, 255, 0);
+	sheet.Strobe(2, 2, 0, 255, 255);
+	sheet.Strobe(3, 2, 127, 0, 255);
+	sheet.Strobe(4, 2, 255, 0, 0);
+	sheet.Strobe(5, 2, 127, 255, 0);
+	sheet.Strobe(6, 2, 0, 255, 255);
+	sheet.Strobe(7, 2, 127, 0, 255);
+
+	sheet.Strobe(1, 2, 0, 255, 255);
+	sheet.Strobe(2, 2, 127, 0, 255);
+	sheet.Strobe(3, 2, 255, 0, 0);
+	sheet.Strobe(4, 2, 127, 255, 0);
+	sheet.Strobe(5, 2, 0, 255, 255);
+	sheet.Strobe(6, 2, 127, 0, 255);
+	sheet.Strobe(7, 2, 127, 255, 0);
+
+	sheet.Strobe(1, 2, 127, 0, 255);
+	sheet.Strobe(2, 2, 255, 0, 0);
+	sheet.Strobe(3, 2, 127, 255, 0);
+	sheet.Strobe(4, 2, 0, 255, 255);
+	sheet.Strobe(5, 2, 127, 0, 255);
+	sheet.Strobe(6, 2, 127, 255, 0);
+	sheet.Strobe(7, 2, 0, 255, 255);
+
+	sheet.Strobe(1, 2, 255, 0, 0);
+	sheet.Strobe(2, 2, 127, 255, 0);
+	sheet.Strobe(3, 2, 0, 255, 255);
+	sheet.Strobe(4, 2, 127, 0, 255);
+	sheet.Strobe(5, 2, 127, 255, 0);
+	sheet.Strobe(6, 2, 0, 255, 255);
+	sheet.Strobe(7, 2, 127, 0, 255);
+
+	sheet.Strobe(1, 2, 127, 255, 0);
+	sheet.Strobe(2, 2, 0, 255, 255);
+	sheet.Strobe(3, 2, 127, 0, 255);
+	sheet.Strobe(4, 2, 127, 255, 0);
+	sheet.Strobe(5, 2, 0, 255, 255);
+	sheet.Strobe(6, 2, 127, 0, 255);
+	sheet.Strobe(7, 2, 255, 0, 0);
+
+	sheet.Strobe(1, 2, 0, 255, 255);
+	sheet.Strobe(2, 2, 127, 0, 255);
+	sheet.Strobe(3, 2, 127, 255, 0);
+	sheet.Strobe(4, 2, 0, 255, 255);
+	sheet.Strobe(5, 2, 127, 0, 255);
+	sheet.Strobe(6, 2, 255, 0, 0);
+	sheet.Strobe(7, 2, 127, 255, 0);
+
+
+	sheet.Strobe(1, 3, 0, 255, 255);
+	sheet.Strobe(2, 3, 127, 0, 255);
+	sheet.Strobe(3, 3, 255, 0, 0);
+	sheet.Strobe(4, 3, 127, 255, 0);
+	sheet.Strobe(5, 3, 127, 0, 255);
+	sheet.Strobe(6, 3, 255, 0, 0);
+	sheet.Strobe(7, 3, 127, 255, 0);
+
+	sheet.Strobe(1, 3, 127, 255, 0);
+	sheet.Strobe(2, 3, 0, 255, 255);
+	sheet.Strobe(3, 3, 127, 0, 255);
+	sheet.Strobe(4, 3, 255, 0, 0);
+	sheet.Strobe(5, 3, 127, 255, 0);
+	sheet.Strobe(6, 3, 0, 255, 255);
+	sheet.Strobe(7, 3, 127, 0, 255);
+
+	sheet.Strobe(1, 3, 0, 255, 255);
+	sheet.Strobe(2, 3, 127, 0, 255);
+	sheet.Strobe(3, 3, 255, 0, 0);
+	sheet.Strobe(4, 3, 127, 255, 0);
+	sheet.Strobe(5, 3, 0, 255, 255);
+	sheet.Strobe(6, 3, 127, 0, 255);
+	sheet.Strobe(7, 3, 127, 255, 0);
+
+	sheet.Strobe(1, 3, 127, 0, 255);
+	sheet.Strobe(2, 3, 255, 0, 0);
+	sheet.Strobe(3, 3, 127, 255, 0);
+	sheet.Strobe(4, 3, 0, 255, 255);
+	sheet.Strobe(5, 3, 127, 0, 255);
+	sheet.Strobe(6, 3, 127, 255, 0);
+	sheet.Strobe(7, 3, 0, 255, 255);
+
+	sheet.Strobe(1, 3, 255, 0, 0);
+	sheet.Strobe(2, 3, 127, 255, 0);
+	sheet.Strobe(3, 3, 0, 255, 255);
+	sheet.Strobe(4, 3, 127, 0, 255);
+	sheet.Strobe(5, 3, 127, 255, 0);
+	sheet.Strobe(6, 3, 0, 255, 255);
+	sheet.Strobe(7, 3, 127, 0, 255);
+
+	sheet.Strobe(1, 3, 127, 255, 0);
+	sheet.Strobe(2, 3, 0, 255, 255);
+	sheet.Strobe(3, 3, 127, 0, 255);
+	sheet.Strobe(4, 3, 127, 255, 0);
+	sheet.Strobe(5, 3, 0, 255, 255);
+	sheet.Strobe(6, 3, 127, 0, 255);
+	sheet.Strobe(7, 3, 255, 0, 0);
+
+	sheet.Strobe(1, 3, 0, 255, 255);
+	sheet.Strobe(2, 3, 127, 0, 255);
+	sheet.Strobe(3, 3, 127, 255, 0);
+	sheet.Strobe(4, 3, 0, 255, 255);
+	sheet.Strobe(5, 3, 127, 0, 255);
+	sheet.Strobe(6, 3, 255, 0, 0);
+	sheet.Strobe(7, 3, 127, 255, 0);
+
+	sheet.fade3xTo(1, 0, 255, 255, 0, 0, 0,
+				   2, 127, 0, 255, 0, 0, 0,
+				   3, 127, 255, 0, 0, 0, 0);
+	sheet.fade3xTo(4, 0, 255, 255, 0, 0, 0,
+				   5, 127, 0, 255, 0, 0, 0,
+				   6, 255, 0, 0, 0, 0, 0);
+	sheet.fadeTo(7, 127, 255, 0, 0, 0, 0);
+}
+
+void sequenceTen () {
+	
+}
